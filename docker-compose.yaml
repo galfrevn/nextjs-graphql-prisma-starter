@@ -1,0 +1,15 @@
+version: "3.5"
+
+services:
+    db:
+        container_name: marketing_database
+        image: postgres:13.3
+        restart: always
+        env_file: .env
+        volumes:
+            - marketing:/var/lib/postgresql/data
+        ports:
+            - ${POSTGRES_PORT}:${POSTGRES_PORT}
+volumes:
+    marketing:
+        name: marketing
