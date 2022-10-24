@@ -18,6 +18,76 @@ model User {
   image     String?
   password  String?
   role      Role     @default(SELLER)
+  ip        String?
+  mac       String?
+  balance   Int?     @default(0)
+
+  sale         Sale[]
+  supervisorId String?
+  supervisor   User?     @relation("SupervisorUser", fields: [supervisorId], references: [id])
+  users        User[]    @relation("SupervisorUser")
+  paymentFrom  Payment[] @relation("PaymentFrom")
+  paymentTo    Payment[] @relation("PaymentTo")
+}
+
+model Payment {
+  id           String   @id @default(uuid())
+  paymentFrom  User     @relation("PaymentFrom", fields: [userIdFrom], references: [id])
+  paymentTo    User     @relation("PaymentTo", fields: [userIdTo], references: [id])
+  amountBefore Int
+  amountAfter  Int
+  userIdFrom   String
+  userIdTo     String
+  createdAt    DateTime @default(now())
+}
+
+model Sale {
+  id                       String  @id @default(uuid())
+  clientSocialNetwork      String?
+  clientSocialNetworkUrl   String?
+  clientSocialNetworkImage String?
+  clientObservations       String?
+
+  productDetail   String?
+  productQuantity Int?
+
+  paymentAmount    Int?
+  paymentMethod    String?
+  paymentCurrency  String?
+  paymentFirstName String?
+  paymentLastName  String?
+  paymentEmail     String?
+  paymentWhatsapp  String?
+  paymentImage     String?
+
+  campaignStartDate DateTime? @default(now())
+  campaignDuration  Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  paymentStatus   paymentStatus   @default(PENDING)
+  objectiveStatus objectiveStatus @default(PENDING)
+}
+
+enum objectiveStatus {
+  PENDING
+  CONFIRMED
+  PROGRESS
+  FINISHED
+  ACCOMPLISHED
+  PAUSED
+  ERROR
+}
+
+enum paymentStatus {
+  PENDING
+  CONFIRMED
+  REIMBURSED
+  REJECTED
 }
 
 enum Role {
